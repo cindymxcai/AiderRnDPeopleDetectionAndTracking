@@ -1,0 +1,1 @@
+This folder stores input videos for the Mask R-CNN people detection and traqcking algorithm
