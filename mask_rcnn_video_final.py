@@ -51,6 +51,7 @@ def set_section_boundaries(section_number):
     elif section_number == 12:
         return [[(section_width * 3) + 1, (section_height * 2) + 1], [frame_width, frame_height]]
 
+
 # construct the argument parse and parse the arguments
 ap = argparse.ArgumentParser()
 ap.add_argument("-i", "--input", required=True,
@@ -110,7 +111,7 @@ trackerCounter = 1
 #  Declare and initialize frame processing limiter
 processFrames = 2  # Process each nth frame
 
-#  Delcare and initialize a frame, instance segmentation and tracking marker color
+#  Declare and initialize a frame, instance segmentation and tracking marker color
 frameColor = 2  # 2 = Blue
 
 # Declare and initialize array to store x and y coordinates for tracking markers
@@ -160,7 +161,6 @@ while True:
             hours += 1
             minutes = 0
 
-        print("Frame number: ", frameCounter)
         # construct a blob from the input frame and then perform a
         # forward pass of the Mask R-CNN, giving us (1) the bounding box
         # coordinates of the objects in the image along with (2) the
@@ -254,13 +254,13 @@ while True:
                     middleX = int(startX + (lengthOfBox/2))
 
                     #  Assign the current marker coordinates to the currentCoords array
-                    currentCoords = [middleX, endY+5]
+                    currentCoords = [middleX, endY]
 
                     #  Append the current tracking marker coordinates to the coordinates array
                     coords.append(currentCoords)
 
                     #  Place the tracking marker at the bottom center of the bounding box
-                    cv2.putText(frame, tracker, (middleX, endY + 5),
+                    cv2.putText(frame, tracker, (middleX, endY),
                                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
                     trackerCounter = 1
                     trackerString = str(trackerCounter)
@@ -290,8 +290,7 @@ while True:
 
             #  Save the final frame of the video as a jpg file for hot zone detection visual
             if frameCounter == total:
-                cv2.imwrite("final1.jpg", frame)
-                print("final1.jpg saved to output！")
+                cv2.imwrite("hotzones.jpg", frame)
 
         counter.append(personCounter)
         for c in counter:
@@ -352,27 +351,26 @@ section9Total = 0; section10Total = 0; section11Total = 0; section12Total = 0
 
 #  Declare and initialize a tracking marker counter
 markerCount = 0
-
 #  Find which section the tracking marker is in and add 1 to the section total counter
 for p in coords:
     # Check if the marker is in the first column
     if p[0] >= section1[0][0] and p[0] <= section1[1][0]:
         # Check if the marker is in the first row
-        if p[1] >= section1[0][1] and p[1] < section1[1][1]:
+        if p[1] >= section1[0][1] and p[1] <= section1[1][1]:
             section1Total += 1
         # Check if the marker is in the second row
-        elif p[1] >= section5[0][1] and p[1] < section5[1][1]:
+        elif p[1] >= section5[0][1] and p[1] <= section5[1][1]:
             section5Total += 1
         # Check if the marker is in the thirdrow
-        elif p[1] >= section9[0][1] and p[1] <= section9[1][1]:
+        elif p[1] >= section9[0][1] and p[1] <= section9[1][1] :
             section9Total += 1
     # Check if the marker is in the second column
     elif p[0] >= section2[0][0] and p[0] <= section2[1][0]:
         # Check if the marker is in the first row
-        if p[1] >= section2[0][1] and p[1] < section2[1][1]:
+        if p[1] >= section2[0][1] and p[1] <= section2[1][1]:
             section2Total += 1
         # Check if the marker is in the second row
-        elif p[1] >= section6[0][1] and p[1] < section6[1][1]:
+        elif p[1] >= section6[0][1] and p[1] <= section6[1][1]:
             section6Total += 1
         # Check if the marker is in the third row
         elif p[1] >= section10[0][1] and p[1] <= section10[1][1]:
@@ -381,10 +379,10 @@ for p in coords:
     # Check if the marker is in the third column
     elif p[0] >= section3[0][0] and p[0] <= section3[1][0]:
         # Check if the marker is in the first row
-        if p[1] >= section3[0][1] and p[1] < section3[1][1]:
+        if p[1] >= section3[0][1] and p[1] <= section3[1][1]:
             section3Total += 1
         # Check if the marker is in the second row
-        elif p[1] >= section7[0][1] and p[1] < section7[1][1]:
+        elif p[1] >= section7[0][1] and p[1] <= section7[1][1]:
             section7Total += 1
         # Check if the marker is in the third row
         elif p[1] >= section11[0][1] and p[1] <= section11[1][1]:
@@ -392,15 +390,14 @@ for p in coords:
     # Check if the marker is in the fourth column
     elif p[0] >= section4[0][0] and p[0] <= section4[1][0]:
         # Check if the marker is in the first row
-        if p[1] >= section4[0][1] and p[1] < section4[1][1]:
+        if p[1] >= section4[0][1] and p[1] <= section4[1][1]:
             section4Total += 1
         # Check if the marker is in the second row
-        elif p[1] >= section8[0][1] and p[1] < section8[1][1]:
+        elif p[1] >= section8[0][1] and p[1] <= section8[1][1]:
             section8Total += 1
         # Check if the marker is in the third row
         elif p[1] >= section12[0][1] and p[1] <= section12[1][1]:
             section12Total += 1
-
     markerCount += 1
 
     #  Write all coordinates to a text file
@@ -435,14 +432,13 @@ print("Section 12 Total: ", section12Total)
 #  Open the last frame of the video file
 img = cv2.imread("final1.jpg")
 
-# Set colors for section boxes - rgb values are reversed (not sure why)
-green = (0, 255, 0)  #50 - 74 tracking markers
-orange = (0, 165, 255)  #75 - 100 tracking markers
-red = (0, 0, 255)  #100+ tracking markers
+# Set colors for hot zone boxes - rgb values are reversed (not sure why)
+green = (0, 255, 0)
+orange = (0, 165, 255)
+red = (0, 0, 255)
 
 #  Set section box line thickness
 lineSize = 2
-
 # Section with most foot traffic
 first = 0
 # Section with second most foot traffic
@@ -660,5 +656,3 @@ print("[INFO] cleaning up...")
 
 writer.release()
 vs.release()
-
-
